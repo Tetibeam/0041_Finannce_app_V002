@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Finance App{% endblock %}
+
+{% block head_extra %}
+<style>
+.main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 1vh;
+}
+.graph-container > div {
+    height: 44vh !important;
+}
+.graph-title {
+    font-size: 3vh;
+    text-align: left;
+    margin: 0 0 0.5vh 0.5vh; /* 上0, 右0, 下0.5vh, 左0 */
+}
+.graph-title a {
+    color: inherit;
+    text-decoration: none;
+}
+.graph-title a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% for key, title in graphs_info.items() %}
+  <div class="graph-container">
+    <h2 class="graph-title">
+      <a href="/graph/{{ key }}">{{ title }}</a>
+    </h2>
+    {{ graphs[key]|safe }}
+  </div>
+{% endfor %}
+{% endblock %}

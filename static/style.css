@@ -1,0 +1,33 @@
+/* 全体レイアウト */
+body {
+  font-family: "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
+  margin: 0;
+  background: #121212; /* ダーク背景 */
+  color: #e0e0e0;     /* 明るめ文字 */
+}
+
+/* サイドバー */
+.sidebar {
+  position: fixed;
+  width: 15%;
+  height: 100vh;
+  background: #1f1f1f;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar h1 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  display: block;
+  margin: 10px 0;
+  color: #ccc;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  color: #fff;
+}
