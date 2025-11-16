@@ -1,7 +1,7 @@
 from flask import Flask
 from utils.config import load_settings
 from modules.routes_dashboard import dashboard_bp
-from modules.routes_graph import graph_bp
+#from modules.routes_graph import graph_bp
 
 def create_app():
     app = Flask(__name__)
@@ -16,7 +16,7 @@ def create_app():
 
     # Blueprint登録
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(graph_bp)
+    #app.register_blueprint(graph_bp)
 
     return app
 
