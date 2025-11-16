@@ -19,69 +19,70 @@
     margin: 0 0 0.5vh 0.5vh;
 }
 </style>
-
 <script src="https://cdn.plot.ly/plotly-2.31.1.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="main" id="graph-area">
-    <!-- JSがここにPlotlyグラフを挿入する -->
-</div>
+<div class="main" id="graph-area"></div>
 
 <script>
 async function loadDashboardGraphs() {
-    const res = await fetch("/api/dashboard/graphs");
-    const payload = await res.json();
+    try {
+        const res = await fetch("/api/dashboard/graphs");
+        const payload = await res.json();
 
-    if (!payload.ok) {
-        console.error("API error:", payload);
-        return;
+        // JSONが空やエラーなら終了
+        if (!payload || !payload.graphs) {
+            console.error("API returned invalid data:", payload);
+            return;
+        }
+
+        const graphs = payload.graphs;
+        const graphArea = document.getElementById("graph-area");
+
+        Object.keys(graphs).forEach(key => {
+            const g = graphs[key];
+
+            // HTML生成
+            const box = document.createElement("div");
+            box.className = "graph-container";
+
+            const title = document.createElement("h2");
+            title.className = "graph-title";
+            title.innerText = g.title;
+
+            const graphDiv = document.createElement("div");
+            graphDiv.id = `graph-${key}`;
+            graphDiv.style.width = "100%";
+            graphDiv.style.height = "100%";
+
+            box.appendChild(title);
+            box.appendChild(graphDiv);
+            graphArea.appendChild(box);
+
+            // Plotlyトレース
+            const traces = g.series.map(s => ({
+                x: g.x,
+                y: s.data,
+                mode: "lines",
+                name: s.name,
+                line: { width: 2 }
+            }));
+
+            const layout = {
+                title: "",
+                margin: { l: 40, r: 20, t: 10, b: 40 },
+                xaxis: { title: g.label?.x || "" },
+                yaxis: { title: g.label?.y || "" },
+                showlegend: true,
+            };
+
+            Plotly.newPlot(graphDiv, traces, layout, { responsive: true });
+        });
+
+    } catch (err) {
+        console.error("Failed to load dashboard graphs:", err);
     }
-
-    const graphs = payload.graphs;
-    const graphArea = document.getElementById("graph-area");
-
-    Object.keys(graphs).forEach(key => {
-        const g = graphs[key];
-
-        // HTMLを生成
-        const box = document.createElement("div");
-        box.className = "graph-container";
-
-        const title = document.createElement("h2");
-        title.className = "graph-title";
-        title.innerText = g.title;
-
-        const graphDiv = document.createElement("div");
-        graphDiv.id = `graph-${key}`;
-        graphDiv.style.width = "100%";
-        graphDiv.style.height = "100%";
-
-        box.appendChild(title);
-        box.appendChild(graphDiv);
-        graphArea.appendChild(box);
-
-        // Plotlyトレース生成
-        const traces = g.series.map(s => ({
-            x: g.x,
-            y: s.data,
-            mode: "lines",
-            name: s.name,
-            line: { width: 2 }
-        }));
-
-        // Layout設定
-        const layout = {
-            title: "",
-            margin: { l: 40, r: 20, t: 10, b: 40 },
-            xaxis: { title: g.label?.x || "" },
-            yaxis: { title: g.label?.y || "" },
-            showlegend: true,
-        };
-
-        // グラフ描画
-        Plotly.newPlot(graphDiv, traces, layout, { responsive: true });
-    });
 }
 
 // 初期ロード

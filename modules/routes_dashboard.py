@@ -20,6 +20,12 @@ def dashboard():
     graphs, graphs_info = build_dashboard_graphs(FINANCE_DB)
     return render_template("dashboard.html", graphs=graphs, graphs_info=graphs_info)"""
 
+@dashboard_bp.route("/view")
+def view():
+    return render_template("dashboard.html")
+
+# API 用ルート
+@dashboard_bp.route("/", methods=["GET"])
 def index():
     """
     API root: 簡単なメタ情報を返す
@@ -33,8 +39,6 @@ def index():
         }
     }
     return jsonify(payload)
-
-dashboard_bp.add_url_rule("/", "index", index)
 
 @dashboard_bp.route("/graphs", methods=["GET"])
 def graphs():
