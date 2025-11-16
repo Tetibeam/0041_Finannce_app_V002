@@ -78,11 +78,13 @@ def graph_common_setting(fig):
     fig.update_layout(
         # サイズ調整
         autosize=True, margin=dict(l=0,r=10,t=0,b=30),
-
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-
         title_font=dict(size=14), font=dict(size=8),
+    )
 
+    for trace in fig.data:
+        trace.name = trace.name  # 再設定して凡例マッピングを維持
+
+    fig.update_layout(
         legend=dict(
             visible=True,
             orientation="h",
@@ -101,19 +103,87 @@ def build_total_assets(df_asset_profit, df_target):
                   left_index=True, right_index=True,suffixes=("_実績", "_目標"))
     # PXでグラフ生成
     fig = px.line(df, x=df.index, y=["資産額_実績", "資産額_目標"],template="plotly_dark",
-            labels={"date": "日付", "value":"資産額","variable":""})
+            labels={"index": "日付", "value":"資産額","variable":""})
     fig = graph_common_setting(fig)
+
     # metaでID付与
     fig.update_layout(meta={"id": "total_assets"})
+
     # JSONに変換
     return fig.to_json()
 
 def build_total_returns(df_asset_profit, df_target):
-    pass
+    # データフレーム生成
+    df_cumsum_target = df_target["トータルリターン"].cumsum()
+    df = pd.merge(df_asset_profit["トータルリターン"], df_cumsum_target,
+                  left_index=True, right_index=True,suffixes=("_実績", "_目標"))
+    # PXでグラフ生成
+    fig = px.line(df, x=df.index, y=["トータルリターン_実績", "トータルリターン_目標"],template="plotly_dark",
+            labels={"index": "日付", "value":"トータルリターン","variable":""})
+    fig = graph_common_setting(fig)
+    # metaでID付与
+    fig.update_layout(meta={"id": "total_returns"})
+    #fig.show()
+
+    # JSONに変換
+    return fig.to_json()
+
+def make_df_general(df_balance):
+    df_general = df_balance.query('収支タイプ == "一般収支"')
+    df_general = df_general.pivot_table(
+        index="date", columns="収支カテゴリー",values=["金額", "目標"], aggfunc="sum")
+    df_general.columns = [f"{val}_{cat}" for val, cat in df_general.columns]
+    df_general = df_general.resample('ME').sum()
+    #print(df_general)
+    return df_general
+
 def build_general_income_expenditure(df_general):
-    pass
+    # PXでグラフ生成
+    fig = px.bar(
+        df_general, x=df_general.index, y=["金額_収入", "金額_支出"], barmode='group',
+        template='plotly_dark',labels={'value':'金額', 'date':'年月', 'variable':''}
+    )
+    fig.add_scatter(
+        x=df_general.index,
+        y=df_general['目標_収入'],
+        mode='lines+markers',
+        name='目標_収入',
+        line=dict(color='blue', width=2)
+    )
+    fig.add_scatter(
+        x=df_general.index,
+        y=df_general['目標_支出'],
+        mode='lines+markers',
+        name='目標_支出',
+        line=dict(color='orange', width=2)
+    )
+    fig = graph_common_setting(fig)
+    # metaでID付与
+    fig.update_layout(meta={"id": "general_income_expenditure"})
+    #fig.show()
+
+    # JSONに変換
+    return fig.to_json()
+
 def build_general_balance(df_general):
-    pass
+    fig = px.bar(
+        df_general, x=df_general.index, y=["金額_収支"],  template='plotly_dark',
+            labels={'value':'金額', 'date':'年月', 'variable':''},
+    )
+    fig.add_scatter(
+        x=df_general.index,
+        y=df_general['目標_収支'],
+        mode='lines+markers',
+        name='目標_収支',
+        line=dict(color='orange', width=2)
+    )
+    fig = graph_common_setting(fig)
+    # metaでID付与
+    fig.update_layout(meta={"id": "general_balance"})
+    fig.show()
+
+    # JSONに変換
+    return fig.to_json()
 def build_special_income_expenditure(df_special):
     pass
 def build_special_balance(df_special):
@@ -130,13 +200,16 @@ def build_dashboard_payload(db_path: str, include_graphs: bool = True, include_s
         result["summary"] = build_summary(df_asset_profit, df_target)
         #print(result)
     if include_graphs:
+        # データフレーム生成
+        df_general_balance = make_df_general(df_balance)
+
         result["graphs"] = {
             "assets": build_total_assets(df_asset_profit, df_target),
             "returns": build_total_returns(df_asset_profit, df_target),
-            "general_income_expenditure": build_general_income_expenditure(df_balance),
-            "general_balance": build_general_balance(df_balance),
-            "special_income_expenditure": build_special_income_expenditure(df_balance),
-            "special_balance": build_special_balance(df_balance)
+            "general_income_expenditure": build_general_income_expenditure(df_general_balance),
+            "general_balance": build_general_balance(df_general_balance),
+            "special_income_expenditure": build_special_income_expenditure(df_special_balance),
+            "special_balance": build_special_balance(df_special_balance)
         }
     return result
 
