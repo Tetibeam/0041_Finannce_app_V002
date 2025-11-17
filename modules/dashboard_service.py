@@ -63,6 +63,7 @@ def read_table_from_db(db_path):
 
 def build_summary(df_asset_profit, df_target) -> Dict[str, float]:
     latest = df_asset_profit.index.max()
+    latest = latest.strftime("%Y/%m/%d")
     return {
         "latest_date": latest,
         "total_assets": df_asset_profit.loc[latest, "資産額"],

@@ -8,26 +8,46 @@ body {
 
 /* サイドバー */
 .sidebar {
-  position: fixed;
-  width: 15%;
-  height: 100vh;
-  background: #1f1f1f;
-  padding: 20px;
-  box-sizing: border-box;
+    position: fixed;
+    width: 15%;
+    height: 100vh;
+    background: #1f1f1f;
+    padding: 2vh;
+    box-sizing: border-box;
 }
-
-.sidebar h1 {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+.sidebar h1 { 
+  font-size: 3vh;
+  margin-bottom: 10px;
 }
-
 .sidebar a {
   display: block;
-  margin: 10px 0;
+  margin: 2vh 0;
   color: #ccc;
   text-decoration: none;
 }
-
 .sidebar a:hover {
   color: #fff;
+}
+/* メインコンテンツ */
+.main {
+    margin-left: 15%;
+    padding: 1vh;
+}
+/* グラフ共通 */
+.graph-title {
+    color: #ffffff;
+}
+.main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 1vh;
+}
+.graph-container > div {
+    height: 44vh !important;
+}
+.graph-title {
+    font-size: 3vh;
+    text-align: left;
+    margin: 0 0 0.5vh 0.5vh;
 }

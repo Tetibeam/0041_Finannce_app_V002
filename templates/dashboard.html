@@ -1,91 +1,31 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}Finance Dashboard{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-{% block title %}Dashboard | Finance App{% endblock %}
+{% block head_extra %}{% endblock %}
+</head>
+<body>
 
-{% block head_extra %}
-<style>
-.main {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 1vh;
-}
-.graph-container > div {
-    height: 44vh !important;
-}
-.graph-title {
-    font-size: 3vh;
-    text-align: left;
-    margin: 0 0 0.5vh 0.5vh;
-}
-</style>
-<script src="https://cdn.plot.ly/plotly-2.31.1.min.js"></script>
+<div class="sidebar">
+  <h1>💰 Finance App</h1>
+  <a href="/api/dashboard/view">ダッシュボード</a>
+
+  {% block sidebar_extra %}{% endblock %}
+</div>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}
 
-{% block content %}
-<div class="main" id="graph-area"></div>
+<div class="main">
+  {% block content %}{% endblock %}
+</div>
 
-<script>
-async function loadDashboardGraphs() {
-    try {
-        const res = await fetch("/api/dashboard/graphs");
-        const payload = await res.json();
 
-        // JSONが空やエラーなら終了
-        if (!payload || !payload.graphs) {
-            console.error("API returned invalid data:", payload);
-            return;
-        }
 
-        const graphs = payload.graphs;
-        const graphArea = document.getElementById("graph-area");
-
-        Object.keys(graphs).forEach(key => {
-            const g = graphs[key];
-
-            // HTML生成
-            const box = document.createElement("div");
-            box.className = "graph-container";
-
-            const title = document.createElement("h2");
-            title.className = "graph-title";
-            title.innerText = g.title;
-
-            const graphDiv = document.createElement("div");
-            graphDiv.id = `graph-${key}`;
-            graphDiv.style.width = "100%";
-            graphDiv.style.height = "100%";
-
-            box.appendChild(title);
-            box.appendChild(graphDiv);
-            graphArea.appendChild(box);
-
-            // Plotlyトレース
-            const traces = g.series.map(s => ({
-                x: g.x,
-                y: s.data,
-                mode: "lines",
-                name: s.name,
-                line: { width: 2 }
-            }));
-
-            const layout = {
-                title: "",
-                margin: { l: 40, r: 20, t: 10, b: 40 },
-                xaxis: { title: g.label?.x || "" },
-                yaxis: { title: g.label?.y || "" },
-                showlegend: true,
-            };
-
-            Plotly.newPlot(graphDiv, traces, layout, { responsive: true });
-        });
-
-    } catch (err) {
-        console.error("Failed to load dashboard graphs:", err);
-    }
-}
-
-// 初期ロード
-loadDashboardGraphs();
-</script>
-{% endblock %}
+</body>
+</html>
