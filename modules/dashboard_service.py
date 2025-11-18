@@ -248,13 +248,14 @@ def build_dashboard_payload(db_path: str, include_graphs: bool = True, include_s
     if include_graphs:
         df_general = make_general_and_special_balance(df_balance, "一般収支")
         df_special = make_general_and_special_balance(df_balance, "特別収支")
+        
         result["graphs"] = {
             "assets": build_total_assets(df_asset_profit, df_target),
-            "returns": build_total_returns(df_asset_profit, df_target),
-            "general_income_expenditure": build_general_income_expenditure(df_general),
-            "general_balance": build_general_balance(df_general),
-            "special_income_expenditure": build_special_income_expenditure(df_special),
-            "special_balance": build_special_balance(df_special)
+            #"returns": build_total_returns(df_asset_profit, df_target),
+            #"general_income_expenditure": build_general_income_expenditure(df_general),
+            #"general_balance": build_general_balance(df_general),
+            #"special_income_expenditure": build_special_income_expenditure(df_special),
+            #"special_balance": build_special_balance(df_special)
         }
     return result
 
