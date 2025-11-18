@@ -66,10 +66,10 @@ def build_summary(df_asset_profit, df_target) -> Dict[str, float]:
     latest = latest.strftime("%Y/%m/%d")
     return {
         "latest_date": latest,
-        "total_assets": df_asset_profit.loc[latest, "資産額"],
-        "total_target_assets": df_target.loc[latest, "資産額"],
-        "total_returns": df_asset_profit.loc[latest, "トータルリターン"],
-        "total_target_returns": df_target.loc[latest, "トータルリターン"],
+        "total_assets": int(df_asset_profit.loc[latest, "資産額"]),
+        "total_target_assets": int(df_target.loc[latest, "資産額"]),
+        "total_returns": int(df_asset_profit.loc[latest, "トータルリターン"]),
+        "total_target_returns": int(df_target.loc[latest, "トータルリターン"]),
     }
 
 def graph_common_setting(fig):
@@ -113,7 +113,7 @@ def build_total_assets(df_asset_profit, df_target):
 
 def build_total_returns(df_asset_profit, df_target):
     # データフレーム生成
-    df_cumsum_target = df_target["トータルリターン"].cumsum()
+    df_cumsum_target = df_target["トータルリターン"]
     df = pd.merge(df_asset_profit["トータルリターン"], df_cumsum_target,
                   left_index=True, right_index=True,suffixes=("_実績", "_目標"))
     # PXでグラフ生成
