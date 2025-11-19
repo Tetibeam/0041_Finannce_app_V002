@@ -8,9 +8,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         // graphs
         const gres = await fetch("/api/dashboard/graphs");
         const gdata = await gres.json();
-        //displayGraphs(gdata.graphs);
-        const figJson = gdata.graphs["assets"];
-        displaySingleGraph(figJson, "🤑 総資産推移");
+        Object.entries(gdata.graphs).forEach(([key, figJson]) => {
+            let titleText = {
+                "assets": "総資産推移",
+                "returns": "トータルリターン",
+                "general_income_expenditure": "一般収入・支出",
+                "general_balance": "一般支出",
+                "special_income_expenditure": "特別収入・支出",
+                "special_balance": "特別支出"
+            }[key] || key;
+            
+            //console.log(key);
+            //console.log(figJson);
+
+            displaySingleGraph(figJson, titleText);
+        });
 
     } catch (err) {
         console.error("Failed to load dashboard summary:", err);
@@ -45,29 +57,25 @@ function displaySummary(summary) {
     `;
 }
 
-// 単体グラフを .main に表示
 function displaySingleGraph(figJson, titleText) {
     const main = document.getElementById("graphs-area");
     if (!main || !figJson) return;
 
-    main.innerHTML = ""; // 既存内容クリア
-
     const wrap = document.createElement("div");
     wrap.className = "graph-container";
 
-    // タイトル
     const title = document.createElement("div");
     title.className = "graph-title";
     title.textContent = titleText;
     wrap.appendChild(title);
 
-    // Plotly グラフ本体
     const graphDiv = document.createElement("div");
     wrap.appendChild(graphDiv);
 
-    const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
-    
-    Plotly.newPlot(graphDiv, fig.data, fig.layout,{responsive: true});
-
     main.appendChild(wrap);
+
+    const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
+
+    // 高さを JS で指定しない → CSS の flex に任せる
+    Plotly.newPlot(graphDiv, fig.data, fig.layout || {}, {responsive: true});
 }

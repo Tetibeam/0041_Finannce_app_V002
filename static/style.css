@@ -51,39 +51,50 @@ body {
     margin-left: 15%;
     padding: 1vh;
 }
+
 /* グラフ共通 */
 .graph-title {
     color: #ffffff;
 }
-/* メインコンテンツ（単体グラフ用） */
-.main {
-    margin-left: 15%;     /* サイドバー分ずらす */
+/* メインコンテンツ（複数グラフ用） */
+/*.main {
+    margin-left: 15%;    
     padding: 2vh;
-    height: 100vh;        /* 画面全体 */
+    height: 100vh;    
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 2vh;
-}
-/* グラフコンテナ（1つだけを大きく表示） */
-.graph-container {
-    background: #1c1c1c;
-    padding: 2vh;
-    border-radius: 1vh;
-    height: calc(100vh - 10vh); /* タイトル分を差し引き */
+}*/
+
+/* メイングリッド */
+.main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr); /* 2行均等 */
+    gap: 1vh;
+    height: 100vh;
+    padding: 1vh;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+}
+/* グラフコンテナ */
+.graph-container {
+    display: grid;
+    grid-template-rows: auto 1fr; /* 上がタイトル auto、下がグラフ 1fr */
+    overflow: hidden;
+    background: #1c1c1c;
+    border-radius: 1vh;
+    padding: 1vh;
 }
 /* タイトル */
 .graph-title {
     font-size: 3vh;
-    color: #ffffff;
-    margin-bottom: 1vh;
+    margin: 0 0 0.5vh 0.5vh;
 }
 
-/* Plotly が描画される div */
-.graph-container > div {
-    flex-grow: 1;     /* 余りを全部使って伸ばす */
-    background: #1c1c1c;
+/* Plotly 描画エリア */
+.graph-container > div:last-child {
+    /* タイトル以外の div がグラフ描画領域 */
+    width: 100%;
+    height: 100%;
 }
