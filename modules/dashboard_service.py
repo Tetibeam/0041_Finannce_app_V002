@@ -5,6 +5,10 @@ import sys
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+import json
+
 
 # このファイルの親フォルダ(= modules の親)をパスに追加
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -59,6 +63,7 @@ def read_table_from_db(db_path):
         db_path=db_path, table_name="target", index_col="date", columns_col= None,
         values_col=["資産額", "トータルリターン"],aggfunc="sum", set_index=True,
     )
+
     return df_asset_profit, df_balance, df_target
 
 def build_summary(df_asset_profit, df_target) -> Dict[str, float]:
@@ -72,12 +77,26 @@ def build_summary(df_asset_profit, df_target) -> Dict[str, float]:
         "total_target_returns": int(df_target.loc[latest, "トータルリターン"]),
     }
 
-def graph_common_setting(fig):
-    fig.update_xaxes(tickformat="%y/%m/%d")
+def graph_common_setting(fig, x_title, y_title):
+    fig.update_xaxes(
+        title = dict(text = x_title, font=dict(size=14)),
+        title_standoff=20,
+        tickformat="%y/%m/%d",
+        tickfont=dict(size=10),
+    )
+    fig.update_yaxes(
+        title = dict(text = y_title, font=dict(size=14)),
+        title_standoff=20,
+        tickprefix="¥",
+        tickformat=",~s",
+        tickfont=dict(size=10),
+    )
     fig.update_layout(
         # サイズ調整
         autosize=True, margin=dict(l=0,r=10,t=0,b=30),
         title_font=dict(size=14), font=dict(size=8),
+        # template
+        template="plotly_dark",
     )
 
     for trace in fig.data:
@@ -91,6 +110,7 @@ def graph_common_setting(fig):
             y=1.2,
             xanchor="right",
             x=1,
+            font=dict(size=12),
         )
     )
 
@@ -100,16 +120,22 @@ def build_total_assets(df_asset_profit, df_target):
     # データフレーム生成
     df = pd.merge(df_asset_profit["資産額"], df_target["資産額"],
                   left_index=True, right_index=True,suffixes=("_実績", "_目標"))
+    #print(df)
     # PXでグラフ生成
-    fig = px.line(df, x=df.index, y=["資産額_実績", "資産額_目標"],template="plotly_dark",
-            labels={"index": "日付", "value":"資産額","variable":""})
-    fig = graph_common_setting(fig)
-
+    x_values = df.index.strftime("%Y-%m-%d").tolist()
+    y1_values = df["資産額_実績"].astype(float).tolist()
+    y2_values = df["資産額_目標"].astype(float).tolist()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x_values, y=y1_values, mode="lines", name="資産額_実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y2_values, mode="lines", name="資産額_目標"))
+    fig = graph_common_setting(fig, "日付", "資産額")
     # metaでID付与
     fig.update_layout(meta={"id": "total_assets"})
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    return json_str
 
 def build_total_returns(df_asset_profit, df_target):
     # データフレーム生成
@@ -248,7 +274,7 @@ def build_dashboard_payload(db_path: str, include_graphs: bool = True, include_s
     if include_graphs:
         df_general = make_general_and_special_balance(df_balance, "一般収支")
         df_special = make_general_and_special_balance(df_balance, "特別収支")
-        
+
         result["graphs"] = {
             "assets": build_total_assets(df_asset_profit, df_target),
             #"returns": build_total_returns(df_asset_profit, df_target),

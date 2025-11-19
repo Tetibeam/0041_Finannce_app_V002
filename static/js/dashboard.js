@@ -4,6 +4,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const res = await fetch("/api/dashboard/summary");
         const data = await res.json();
         displaySummary(data.summary);
+
+        // graphs
+        const gres = await fetch("/api/dashboard/graphs");
+        const gdata = await gres.json();
+        //displayGraphs(gdata.graphs);
+        const figJson = gdata.graphs["assets"];
+        displaySingleGraph(figJson, "🤑 総資産推移");
+
     } catch (err) {
         console.error("Failed to load dashboard summary:", err);
     }
@@ -37,66 +45,29 @@ function displaySummary(summary) {
     `;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        // summary 読み込み
-        const sres = await fetch("/api/dashboard/summary");
-        const sdata = await sres.json();
-        displaySummary(sdata.summary);
-
-        // graphs 読み込み
-        const gres = await fetch("/api/dashboard/graphs");
-        const gdata = await gres.json();
-        displayGraphs(gdata.graphs);
-
-    } catch (err) {
-        console.error("Dashboard load error:", err);
-    }
-});
-
-
-// 6 グラフを .main に表示
-function displayGraphs(graphs) {
+// 単体グラフを .main に表示
+function displaySingleGraph(figJson, titleText) {
     const main = document.getElementById("graphs-area");
-    if (!main || !graphs) return;
+    if (!main || !figJson) return;
 
-    main.innerHTML = ""; // 一旦クリア
+    main.innerHTML = ""; // 既存内容クリア
 
-    // graphs は { key: json, ... } の形
-    Object.entries(graphs).forEach(([key, figJson]) => {
+    const wrap = document.createElement("div");
+    wrap.className = "graph-container";
 
-        const wrap = document.createElement("div");
-        wrap.className = "graph-container";
+    // タイトル
+    const title = document.createElement("div");
+    title.className = "graph-title";
+    title.textContent = titleText;
+    wrap.appendChild(title);
 
-        // タイトル（key を見やすい日本語に変換したいならここで mapping）
-        const title = document.createElement("div");
-        title.className = "graph-title";
-        title.textContent = getGraphTitle(key);
-        wrap.appendChild(title);
+    // Plotly グラフ本体
+    const graphDiv = document.createElement("div");
+    wrap.appendChild(graphDiv);
 
-        // Plotly グラフ本体
-        const graphDiv = document.createElement("div");
-        wrap.appendChild(graphDiv);
+    const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
+    
+    Plotly.newPlot(graphDiv, fig.data, fig.layout,{responsive: true});
 
-        // Plotly 描画
-        const fig = JSON.parse(figJson);
-        Plotly.newPlot(graphDiv, fig.data, fig.layout);
-
-        main.appendChild(wrap);
-    });
+    main.appendChild(wrap);
 }
-
-
-// Graph 名を人間用に変換
-function getGraphTitle(key) {
-    const titles = {
-        assets: "🤑 総資産推移",
-        returns: "🤑 トータルリターン",
-        general_income_expenditure: "🤑 一般収入・支出",
-        general_balance: "🤑 一般収支",
-        special_income_expenditure: "🤑 特別収入・支出",
-        special_balance: "🤑 特別収支"
-    };
-    return titles[key] || key;
-}
-

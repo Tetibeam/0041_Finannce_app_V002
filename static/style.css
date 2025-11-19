@@ -19,7 +19,7 @@ body {
 }
 .sidebar h1 { 
   font-size: 3vh;
-  margin-bottom: 10px;
+  margin-bottom: 1vh;
 }
 .sidebar a {
   display: block;
@@ -28,7 +28,7 @@ body {
   text-decoration: none;
 }
 .sidebar a:hover {
-  color: #fff;
+  color: #bef106;
 }
 
 /* dashboard-summary */
@@ -39,7 +39,7 @@ body {
 .summary-grid {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 4px 12px;   /* 行間と列間 */
+    gap: 1vh 1vh;   /* 行間と列間 */
 }
 
 .summary-grid > div:nth-child(odd) {
@@ -55,20 +55,35 @@ body {
 .graph-title {
     color: #ffffff;
 }
+/* メインコンテンツ（単体グラフ用） */
 .main {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 1vh;
+    margin-left: 15%;     /* サイドバー分ずらす */
+    padding: 2vh;
+    height: 100vh;        /* 画面全体 */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
 }
-.graph-container > div {
-    height: 44vh !important;
+/* グラフコンテナ（1つだけを大きく表示） */
+.graph-container {
     background: #1c1c1c;
-    padding: 0.5vh;
-    border-radius: 8px;
+    padding: 2vh;
+    border-radius: 1vh;
+    height: calc(100vh - 10vh); /* タイトル分を差し引き */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
+/* タイトル */
 .graph-title {
     font-size: 3vh;
-    text-align: left;
-    margin: 0 0 0.5vh 0.5vh;
+    color: #ffffff;
+    margin-bottom: 1vh;
+}
+
+/* Plotly が描画される div */
+.graph-container > div {
+    flex-grow: 1;     /* 余りを全部使って伸ばす */
+    background: #1c1c1c;
 }
