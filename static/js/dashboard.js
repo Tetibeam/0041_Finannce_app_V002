@@ -89,5 +89,20 @@ function displaySingleGraph(figJson, titleText) {
 
     const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
 
-    Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: false});
+    Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: true});
+
+    // -------------------
+    // クリックでフルスクリーン化
+    // -------------------
+    title.addEventListener("click", () => {
+        const main = wrap.parentElement; // .main
+        if (wrap.classList.contains("graph-fullscreen")) {
+            wrap.classList.remove("graph-fullscreen");
+        } else {
+            // すでにフルスクリーン化されているグラフを戻す
+            main.querySelectorAll(".graph-fullscreen").forEach(el => el.classList.remove("graph-fullscreen"));
+            wrap.classList.add("graph-fullscreen");
+        }
+        Plotly.Plots.resize(graphDiv);
+    });
 }
