@@ -89,7 +89,51 @@ function displaySingleGraph(figJson, titleText) {
 
     const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
 
+    // 初期フォントサイズを保存
+    const defaultFonts = {
+        font: fig.layout?.font?.size || 12,
+        title: fig.layout?.title?.font?.size || 14,
+        xaxis_title: fig.layout?.xaxis?.title?.font?.size || 12,
+        yaxis_title: fig.layout?.yaxis?.title?.font?.size || 12,
+        xaxis_tick: fig.layout?.xaxis?.tickfont?.size || 10,
+        yaxis_tick: fig.layout?.yaxis?.tickfont?.size || 10,
+        legend: fig.layout?.legend?.font?.size || 10
+    };
+
     Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: true});
+
+    // -----------------------------
+    // フォントを画面サイズに応じて調整
+    // -----------------------------
+    function adjustPlotlyFont() {
+        const width = window.innerWidth;
+        const scale = width / 800; // 800px を基準にスケーリング
+        Plotly.relayout(graphDiv, {
+            'font.size': defaultFonts.font * scale,
+            'title.font.size': defaultFonts.title * scale,
+            'xaxis.title.font.size': defaultFonts.xaxis_title * scale,
+            'yaxis.title.font.size': defaultFonts.yaxis_title * scale,
+            'xaxis.tickfont.size': defaultFonts.xaxis_tick * scale,
+            'yaxis.tickfont.size': defaultFonts.yaxis_tick * scale,
+            'legend.font.size': defaultFonts.legend * scale
+        });
+    }
+    function resetFonts() {
+        Plotly.relayout(graphDiv, {
+            "font.size": defaultFonts.font,
+            "title.font.size": defaultFonts.title,
+            "xaxis.title.font.size": defaultFonts.xaxis_title,
+            "yaxis.title.font.size": defaultFonts.yaxis_title,
+            "xaxis.tickfont.size": defaultFonts.xaxis_tick,
+            "yaxis.tickfont.size": defaultFonts.yaxis_tick,
+            "legend.font.size": defaultFonts.legend
+        });
+    }
+    // 初回適用
+    //resetFonts();
+
+    // ウィンドウリサイズ時に自動調整
+    //window.addEventListener("resize", adjustPlotlyFont);
 
     // -------------------
     // クリックでフルスクリーン化
@@ -98,10 +142,12 @@ function displaySingleGraph(figJson, titleText) {
         const main = wrap.parentElement; // .main
         if (wrap.classList.contains("graph-fullscreen")) {
             wrap.classList.remove("graph-fullscreen");
+            resetFonts();
         } else {
             // すでにフルスクリーン化されているグラフを戻す
             main.querySelectorAll(".graph-fullscreen").forEach(el => el.classList.remove("graph-fullscreen"));
             wrap.classList.add("graph-fullscreen");
+            adjustPlotlyFont();
         }
         Plotly.Plots.resize(graphDiv);
     });
