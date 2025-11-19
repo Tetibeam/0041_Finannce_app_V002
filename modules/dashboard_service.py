@@ -79,22 +79,21 @@ def build_summary(df_asset_profit, df_target) -> Dict[str, float]:
 
 def graph_common_setting(fig, x_title, y_title):
     fig.update_xaxes(
-        title = dict(text = x_title, font=dict(size=14)),
+        title = dict(text = x_title, font=dict(size=10)),
         title_standoff=20,
         tickformat="%y/%m/%d",
-        tickfont=dict(size=10),
+        tickfont=dict(size=8),
     )
     fig.update_yaxes(
-        title = dict(text = y_title, font=dict(size=14)),
+        title = dict(text = y_title, font=dict(size=10)),
         title_standoff=20,
         tickprefix="¥",
-        tickformat=",~s",
-        tickfont=dict(size=10),
+        separatethousands=False,  # これを追加すると tickformat が消えない
+        tickfont=dict(size=8),
     )
     fig.update_layout(
         # サイズ調整
         autosize=True, margin=dict(l=0,r=10,t=0,b=30),
-        title_font=dict(size=14), font=dict(size=8),
         # template
         template="plotly_dark",
     )
@@ -110,7 +109,7 @@ def graph_common_setting(fig, x_title, y_title):
             y=1.2,
             xanchor="right",
             x=1,
-            font=dict(size=12),
+            font=dict(size=10),
         )
     )
 
@@ -143,15 +142,24 @@ def build_total_returns(df_asset_profit, df_target):
     df = pd.merge(df_asset_profit["トータルリターン"], df_cumsum_target,
                   left_index=True, right_index=True,suffixes=("_実績", "_目標"))
     # PXでグラフ生成
-    fig = px.line(df, x=df.index, y=["トータルリターン_実績", "トータルリターン_目標"],template="plotly_dark",
-            labels={"index": "日付", "value":"トータルリターン","variable":""})
+    x_values = df.index.strftime("%Y-%m-%d").tolist()
+    y1_values = df["トータルリターン_実績"].astype(float).tolist()
+    y2_values = df["トータルリターン_目標"].astype(float).tolist()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x_values, y=y1_values, mode="lines", name="トータルリターン_実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y2_values, mode="lines", name="トータルリターン_目標"))
+
     fig = graph_common_setting(fig,"日付", "トータルリターン")
+
     # metaでID付与
     fig.update_layout(meta={"id": "total_returns"})
-    #fig.show()
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    #print(json_str)
+    return json_str
 
 def make_general_and_special_balance(df, balance_type: str):
     if balance_type not in ["一般収支", "特別収支"]:
@@ -175,91 +183,83 @@ def make_general_and_special_balance(df, balance_type: str):
 
 def build_general_income_expenditure(df):
     # PXでグラフ生成
-    fig = px.bar(
-        df, x=df.index, y=["金額_収入", "金額_支出"], barmode='group',
-        template='plotly_dark',labels={'value':'金額', 'date':'年月', 'variable':''}
-    )
-    fig.add_scatter(
-        x=df.index,
-        y=df['目標_収入'],
-        mode='lines+markers',
-        name='目標_収入',
-        line=dict(color='blue', width=2)
-    )
-    fig.add_scatter(
-        x=df.index,
-        y=df['目標_支出'],
-        mode='lines+markers',
-        name='目標_支出',
-        line=dict(color='orange', width=2)
-    )
+    x_values = df.index.strftime("%Y-%m").tolist()
+    y1_values = df["金額_収入"].astype(float).tolist()
+    y2_values = df["金額_支出"].astype(float).tolist()
+    y3_values = df["目標_収入"].astype(float).tolist()
+    y4_values = df["目標_支出"].astype(float).tolist()
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=x_values, y=y1_values, name="収入実績"))
+    fig.add_trace(go.Bar(x=x_values, y=y2_values, name="支出実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y3_values, mode="lines+markers", name="収入目標"))
+    fig.add_trace(go.Scatter(x=x_values, y=y4_values, mode="lines+markers", name="支出目標"))
+
     fig = graph_common_setting(fig, "日付", "金額")
     # metaでID付与
     fig.update_layout(meta={"id": "general_income_expenditure"})
-    #fig.show()
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    return json_str
 
 def build_general_balance(df):
-    fig = px.bar(
-        df, x=df.index, y=["金額_収支"],  template='plotly_dark',
-            labels={'value':'金額', 'date':'年月', 'variable':''},
-    )
-    fig.add_scatter(
-        x=df.index,
-        y=df['目標_収支'],
-        mode='lines+markers',
-        name='目標_収支',
-        line=dict(color='orange', width=2)
-    )
+    x_values = df.index.strftime("%Y-%m").tolist()
+    y1_values = df["金額_収支"].astype(float).tolist()
+    y2_values = df["目標_収支"].astype(float).tolist()
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=x_values, y=y1_values, name="収支実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y2_values, mode="lines+markers", name="収支目標"))
+
     fig = graph_common_setting(fig, "日付", "金額")
     # metaでID付与
     fig.update_layout(meta={"id": "general_balance"})
-    #fig.show()
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    return json_str
 
 def build_special_income_expenditure(df):
-    fig = px.bar(
-    df, x=df.index, y=["金額_収入", "金額_支出"],barmode='group', template='plotly_dark',
-        labels={'value':'金額', 'date':'年月', 'variable':''})
+    # PXでグラフ生成
+    x_values = df.index.strftime("%Y-%m").tolist()
+    y1_values = df["金額_収入"].astype(float).tolist()
+    y2_values = df["金額_支出"].astype(float).tolist()
+    y3_values = df["目標_収入"].astype(float).tolist()
+    y4_values = df["目標_支出"].astype(float).tolist()
 
-    fig.add_scatter(
-        x=df.index,
-        y=df['目標_収入'],
-        mode='lines+markers',
-        name='目標_収入',
-        line=dict(color='blue', width=2)
-    )
-    fig.add_scatter(
-        x=df.index,
-        y=df['目標_支出'],
-        mode='lines+markers',
-        name='目標_支出',
-        line=dict(color='orange', width=2)
-    )
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=x_values, y=y1_values, name="収入実績"))
+    fig.add_trace(go.Bar(x=x_values, y=y2_values, name="支出実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y3_values, mode="lines+markers", name="収入目標"))
+    fig.add_trace(go.Scatter(x=x_values, y=y4_values, mode="lines+markers", name="支出目標"))
+
     fig = graph_common_setting(fig, "日付", "金額")
     # metaでID付与
     fig.update_layout(meta={"id": "special_income_expenditure"})
-    #fig.show()
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    return json_str
 
 def build_special_balance(df):
-    fig = px.line(
-        df, x=df.index, y=["金額_収支","目標_収支"], template='plotly_dark', markers=True,
-            labels={'value':'金額', 'date':'年月', 'variable':''}
-    )
+    x_values = df.index.strftime("%Y-%m").tolist()
+    y1_values = df["金額_収支"].astype(float).tolist()
+    y2_values = df["目標_収支"].astype(float).tolist()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x_values, y=y1_values, mode="lines+markers", fill="tozeroy", name="収支累積実績"))
+    fig.add_trace(go.Scatter(x=x_values, y=y2_values, mode="lines+markers", name="収支累積目標"))
+
     fig = graph_common_setting(fig, "日付", "金額")
     # metaでID付与
     fig.update_layout(meta={"id": "special_balance"})
-    #fig.show()
 
-    # JSONに変換
-    return fig.to_json()
+    fig_dict = fig.to_dict()
+    json_str = json.dumps(fig_dict)
+    #fig.show()
+    return json_str
 
 def build_dashboard_payload(db_path: str, include_graphs: bool = True, include_summary: bool = True) -> Dict[str, Any]:
     # DBから必要データを読み込みます

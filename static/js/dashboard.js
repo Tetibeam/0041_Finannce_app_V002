@@ -8,7 +8,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         // graphs
         const gres = await fetch("/api/dashboard/graphs");
         const gdata = await gres.json();
-        Object.entries(gdata.graphs).forEach(([key, figJson]) => {
+
+        // ★ 表示順を定義
+        const order = [
+            "assets",
+            "general_balance",
+            "special_balance",
+            "returns",
+            "general_income_expenditure",
+            "special_income_expenditure",
+        ];
+
+        order.forEach(key => {
+            const figJson = gdata.graphs[key];
+            if (!figJson) return; // 存在しないキーはスキップ
             let titleText = {
                 "assets": "総資産推移",
                 "returns": "トータルリターン",
@@ -17,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "special_income_expenditure": "特別収入・支出",
                 "special_balance": "特別支出"
             }[key] || key;
-            
+
             //console.log(key);
             //console.log(figJson);
 
@@ -76,6 +89,5 @@ function displaySingleGraph(figJson, titleText) {
 
     const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
 
-    // 高さを JS で指定しない → CSS の flex に任せる
-    Plotly.newPlot(graphDiv, fig.data, fig.layout || {}, {responsive: true});
+    Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: false});
 }
