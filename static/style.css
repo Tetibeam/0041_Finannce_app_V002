@@ -122,3 +122,21 @@ body {
     width: 100% !important;
     height: 90% !important;
 }
+
+.exit-fullscreen-btn {
+    position: absolute;
+    top: 3vh;
+    right: 3vh;
+    padding: 6px 12px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    /*display: none;  初期は非表示 */
+    z-index: 50;
+}
+
+.graph-fullscreen .exit-fullscreen-btn {
+    display: block; /* フルスクリーン時だけ出す */
+}
