@@ -1,32 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>{% block title %}Finance Dashboard{% endblock %}</title>
-<link rel="stylesheet" href="/static/style.css">
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-{% block head_extra %}{% endblock %}
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Finance Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  {% block head_extra %}{% endblock %}
 </head>
+
 <body>
 
-<div class="sidebar">
-  <h1>💰 Finance App</h1>
-  <a href="/api/dashboard/view">ダッシュボード</a>
+  <div class="sidebar">
+    <h1>💰 Finance App</h1>
+    <a href="/api/dashboard/view">ダッシュボード</a>
 
-  {% block sidebar_extra %}{% endblock %}
-</div>
+    {% block sidebar_extra %}{% endblock %}
+  </div>
 
-<div class="graph-container">
-    <button class="exit-fullscreen-btn">戻る</button>
-    <div id="graph1"></div>
-</div>
+  <div id="graphs-area" class="main"></div>
 
-<div id="graphs-area" class="main"></div>
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-{% endblock %}
+  {% block scripts %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  {% endblock %}
 
 </body>
+
 </html>

@@ -95,22 +95,19 @@ function displaySingleGraph(figJson, titleText) {
 
     const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
 
-<<<<<<< HEAD
-    Plotly.newPlot(graphDiv, fig.data, fig.layout, { responsive: true });
-=======
-    // 初期フォントサイズを保存
+    // デフォルトのフォントサイズを保存
+    const layout = fig.layout || {};
     const defaultFonts = {
-        font: fig.layout?.font?.size || 12,
-        title: fig.layout?.title?.font?.size || 14,
-        xaxis_title: fig.layout?.xaxis?.title?.font?.size || 12,
-        yaxis_title: fig.layout?.yaxis?.title?.font?.size || 12,
-        xaxis_tick: fig.layout?.xaxis?.tickfont?.size || 10,
-        yaxis_tick: fig.layout?.yaxis?.tickfont?.size || 10,
-        legend: fig.layout?.legend?.font?.size || 10
+        font: layout.font?.size || 10,
+        title: layout.title?.font?.size || 14,
+        xaxis_title: layout.xaxis?.title?.font?.size || 10,
+        yaxis_title: layout.yaxis?.title?.font?.size || 10,
+        xaxis_tick: layout.xaxis?.tickfont?.size || 10,
+        yaxis_tick: layout.yaxis?.tickfont?.size || 10,
+        legend: layout.legend?.font?.size || 10
     };
 
-    Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: true});
->>>>>>> 82cdeee493656cbd79f93da9b684b09f73ee85f1
+    Plotly.newPlot(graphDiv, fig.data, fig.layout, { responsive: true });
 
     // -----------------------------
     // フォントを画面サイズに応じて調整
@@ -153,17 +150,7 @@ function displaySingleGraph(figJson, titleText) {
 
         // すでにフルスクリーンなら何もしない（戻るボタンで戻る）
         if (wrap.classList.contains("graph-fullscreen")) {
-<<<<<<< HEAD
             return;
-=======
-            wrap.classList.remove("graph-fullscreen");
-            resetFonts();
-        } else {
-            // すでにフルスクリーン化されているグラフを戻す
-            main.querySelectorAll(".graph-fullscreen").forEach(el => el.classList.remove("graph-fullscreen"));
-            wrap.classList.add("graph-fullscreen");
-            adjustPlotlyFont();
->>>>>>> 82cdeee493656cbd79f93da9b684b09f73ee85f1
         }
 
         // 他のフルスクリーンを解除
@@ -172,6 +159,7 @@ function displaySingleGraph(figJson, titleText) {
         // フルスクリーン化
         wrap.classList.add("graph-fullscreen");
         Plotly.Plots.resize(graphDiv);
+        adjustPlotlyFont();
     });
 
     // 戻るボタンクリックで元に戻す
@@ -179,5 +167,6 @@ function displaySingleGraph(figJson, titleText) {
         e.stopPropagation();
         wrap.classList.remove("graph-fullscreen");
         Plotly.Plots.resize(graphDiv);
+        resetFonts();
     });
 }
