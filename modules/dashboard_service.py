@@ -1,17 +1,16 @@
-from utils.data_loader import get_df_from_db
-from typing import Dict, Any
 from pathlib import Path
 import sys
+# このファイルの親フォルダ(= modules の親)をパスに追加
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from utils.data_loader import get_df_from_db
+from typing import Dict, Any
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
 import json
-
-
-# このファイルの親フォルダ(= modules の親)をパスに追加
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 """
 from utils.calculation import cal_general_special_balance_dashboard, cal_total_return_target_dashboard
 from utils.read_from_db import get_asset_and_profit_dashboard, get_balance_dashboard
