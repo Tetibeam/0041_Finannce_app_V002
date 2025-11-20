@@ -1,9 +1,11 @@
 /* 全体レイアウト */
 body {
-  font-family: "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
-  margin: 0;
-  background: #121212; /* ダーク背景 */
-  color: #e0e0e0;     /* 明るめ文字 */
+    font-family: "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
+    margin: 0;
+    background: #121212;
+    /* ダーク背景 */
+    color: #e0e0e0;
+    /* 明るめ文字 */
 }
 
 /* サイドバー */
@@ -17,33 +19,39 @@ body {
     display: flex;
     flex-direction: column;
 }
-.sidebar h1 { 
-  font-size: 3vh;
-  margin-bottom: 1vh;
+
+.sidebar h1 {
+    font-size: 3vh;
+    margin-bottom: 1vh;
 }
+
 .sidebar a {
-  display: block;
-  margin: 2vh 0;
-  color: #ccc;
-  text-decoration: none;
+    display: block;
+    margin: 2vh 0;
+    color: #ccc;
+    text-decoration: none;
 }
+
 .sidebar a:hover {
-  color: #bef106;
+    color: #bef106;
 }
 
 /* dashboard-summary */
 #dashboard-summary {
-    margin-top: auto;    /* ← これが下に固定する魔法 */
+    margin-top: auto;
+    /* ← これが下に固定する魔法 */
 }
 
 .summary-grid {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 1vh 1vh;   /* 行間と列間 */
+    gap: 1vh 1vh;
+    /* 行間と列間 */
 }
 
-.summary-grid > div:nth-child(odd) {
-    font-weight: 600; /* ラベル強調すると読みやすい */
+.summary-grid>div:nth-child(odd) {
+    font-weight: 600;
+    /* ラベル強調すると読みやすい */
 }
 
 /* メインコンテンツ */
@@ -56,6 +64,7 @@ body {
 .graph-title {
     color: #ffffff;
 }
+
 /* メインコンテンツ（複数グラフ用） */
 /*.main {
     margin-left: 15%;    
@@ -71,22 +80,26 @@ body {
 .main {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr); /* 2行均等 */
+    grid-template-rows: repeat(2, 1fr);
+    /* 2行均等 */
     gap: 1vh;
     height: 100vh;
     padding: 1vh;
     box-sizing: border-box;
     /*position: relative;*/
 }
+
 /* グラフコンテナ */
 .graph-container {
     display: grid;
-    grid-template-rows: auto 1fr; /* 上がタイトル auto、下がグラフ 1fr */
+    grid-template-rows: auto 1fr;
+    /* 上がタイトル auto、下がグラフ 1fr */
     overflow: hidden;
     background: #1c1c1c;
     border-radius: 1vh;
     padding: 1vh;
 }
+
 /* タイトル */
 .graph-title {
     font-size: 3vh;
@@ -94,7 +107,7 @@ body {
 }
 
 /* Plotly 描画エリア */
-.graph-container > div:last-child {
+.graph-container>div:last-child {
     /* タイトル以外の div がグラフ描画領域 */
     width: 100%;
     height: 100%;
@@ -102,7 +115,8 @@ body {
 
 /* フルサイズ表示用（Sidebarは残す） */
 .graph-fullscreen {
-    position: fixed; /* .main 内で絶対配置 */
+    position: fixed;
+    /* .main 内で絶対配置 */
     top: 0;
     left: 15%;
     width: 85%;
@@ -114,11 +128,36 @@ body {
     flex-direction: column;
     padding: 2vh;
     box-sizing: border-box;
-    overflow: hidden;     /* スクロールバーを消す */
+    overflow: hidden;
+    /* スクロールバーを消す */
 }
 
-.graph-fullscreen > div:last-child {
+.graph-fullscreen>div:last-child {
     flex: 1;
     width: 100% !important;
     height: 90% !important;
+}
+
+/* 戻るボタン */
+.back-button {
+    display: none;
+    position: absolute;
+    top: 2vh;
+    right: 2vh;
+    padding: 1vh 2vh;
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 0.5vh;
+    cursor: pointer;
+    font-size: 2vh;
+    z-index: 1001;
+}
+
+.back-button:hover {
+    background: #555;
+}
+
+.graph-fullscreen .back-button {
+    display: block;
 }

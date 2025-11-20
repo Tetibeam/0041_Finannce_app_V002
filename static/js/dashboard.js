@@ -77,6 +77,12 @@ function displaySingleGraph(figJson, titleText) {
     const wrap = document.createElement("div");
     wrap.className = "graph-container";
 
+    // 戻るボタン作成
+    const backBtn = document.createElement("button");
+    backBtn.className = "back-button";
+    backBtn.textContent = "戻る";
+    wrap.appendChild(backBtn);
+
     const title = document.createElement("div");
     title.className = "graph-title";
     title.textContent = titleText;
@@ -89,20 +95,31 @@ function displaySingleGraph(figJson, titleText) {
 
     const fig = typeof figJson === "string" ? JSON.parse(figJson) : figJson;
 
-    Plotly.newPlot(graphDiv, fig.data, fig.layout, {responsive: true});
+    Plotly.newPlot(graphDiv, fig.data, fig.layout, { responsive: true });
 
     // -------------------
     // クリックでフルスクリーン化
     // -------------------
     title.addEventListener("click", () => {
         const main = wrap.parentElement; // .main
+
+        // すでにフルスクリーンなら何もしない（戻るボタンで戻る）
         if (wrap.classList.contains("graph-fullscreen")) {
-            wrap.classList.remove("graph-fullscreen");
-        } else {
-            // すでにフルスクリーン化されているグラフを戻す
-            main.querySelectorAll(".graph-fullscreen").forEach(el => el.classList.remove("graph-fullscreen"));
-            wrap.classList.add("graph-fullscreen");
+            return;
         }
+
+        // 他のフルスクリーンを解除
+        main.querySelectorAll(".graph-fullscreen").forEach(el => el.classList.remove("graph-fullscreen"));
+
+        // フルスクリーン化
+        wrap.classList.add("graph-fullscreen");
+        Plotly.Plots.resize(graphDiv);
+    });
+
+    // 戻るボタンクリックで元に戻す
+    backBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        wrap.classList.remove("graph-fullscreen");
         Plotly.Plots.resize(graphDiv);
     });
 }
