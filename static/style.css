@@ -142,7 +142,7 @@ body {
 .back-button {
     display: none;
     position: absolute;
-    top: 2vh;
+    top: 1vh;
     right: 2vh;
     padding: 1vh 2vh;
     background: #333;
