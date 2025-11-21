@@ -1,14 +1,14 @@
-from utils.agg_settings import PATH_ASSET_PROFIT_DETAIL, PATH_ASSET_TYPE_AND_CATEGORY,\
+from ..lib.agg_settings import PATH_ASSET_PROFIT_DETAIL, PATH_ASSET_TYPE_AND_CATEGORY,\
     PATH_ASSET_RAW_DATA
-from utils.file_io import load_parquet, load_csv, save_parquet
-from utils.agg_init import get_latest_date_agg, get_latest_date_raw
-from utils.agg_asset_collection import get_asset_raw_from_table, load_asset_raw_from_pdf
-from utils.agg_asset_cleaning import data_cleaning
-from utils.agg_asset_finalize import finalize_clean_data, check_not_registered_columns_before_finalize
+from ..lib.file_io import load_parquet, load_csv, save_parquet
+from ..lib.agg_init import get_latest_date_agg, get_latest_date_raw
+from ..lib.agg_asset_collection import get_asset_raw_from_table, load_asset_raw_from_pdf
+from ..lib.agg_asset_cleaning import data_cleaning
+from ..lib.agg_asset_finalize import finalize_clean_data, check_not_registered_columns_before_finalize
 import pandas as pd
-import utils.reference_data_store as urds
+from ..lib import reference_data_store as urds
 
-def main():
+def make_asset_main():
     # ---- settings ----
     MAX_WORKERS = 8
 
@@ -50,4 +50,4 @@ def main():
 # Windows の spawn 問題を防ぐための絶対ルール
 # -----------------------------------------------------------
 if __name__ == "__main__":
-    main()
+    make_asset_main()

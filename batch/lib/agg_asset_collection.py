@@ -5,7 +5,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 import logging
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from utils.decorator import check_args_types, require_columns, require_columns_with_dtype
+from .decorator import check_args_types, require_columns, require_columns_with_dtype
 
 #V002
 def process_single_pdf(date, PATH_ASSET_RAW_DATA):

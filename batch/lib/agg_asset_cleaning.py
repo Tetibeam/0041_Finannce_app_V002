@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-import utils.reference_data_store as urds
-from utils.decorator import require_columns, require_columns_with_dtype
-from utils.main_helper import safe_pipe
+from . import reference_data_store as urds
+from .decorator import require_columns, require_columns_with_dtype
+from .main_helper import safe_pipe
 
 # 文字コードの不具合確認（部首コードは変換する)
 def change_Utf8Code(strName: str):

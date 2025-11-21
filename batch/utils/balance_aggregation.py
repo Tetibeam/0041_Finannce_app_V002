@@ -1,18 +1,18 @@
-from utils.file_io import load_parquet, save_parquet
-from utils.main_helper import safe_load_master, safe_pipe
-import utils.reference_data_store as urds
+from ..lib.file_io import load_parquet, save_parquet
+from ..lib.main_helper import safe_load_master, safe_pipe
+from ..lib import reference_data_store as urds
 
-from utils.agg_init import get_latest_date_agg, load_balance_raw_file
-from utils.agg_settings import PATH_BALANCE_TYPE_AND_CATEGORY, PATH_ASSET_PROFIT_DETAIL,\
+from ..lib.agg_init import get_latest_date_agg, load_balance_raw_file
+from ..lib.agg_settings import PATH_BALANCE_TYPE_AND_CATEGORY, PATH_ASSET_PROFIT_DETAIL,\
     PATH_BALANCE_RAW_DATA,PATH_BALANCE_DETAIL
-from utils.target_settings import PATH_TARGET_BALANCE
+from ..lib.target_settings import PATH_TARGET_BALANCE
 
-from utils.agg_balance_collection import filter_and_clean_raw, collect_balance,\
+from ..lib.agg_balance_collection import filter_and_clean_raw, collect_balance,\
     collect_living_adjust, collect_year_end_tax_adjustment, collect_points
-from utils.agg_balance_finalize import finalize_data
+from ..lib.agg_balance_finalize import finalize_data
 
 import pandas as pd
-from utils.exceptions import DataLoadError
+from ..lib.exceptions import DataLoadError
 
 PATHS = {
     "balance_type_category": PATH_BALANCE_TYPE_AND_CATEGORY,
@@ -23,7 +23,7 @@ PATHS = {
 PATH_OUTPUT = PATH_BALANCE_DETAIL
 START_DATE = pd.to_datetime("2024/10/01")
 
-def main():
+def make_balance_main():
     try:
         # ---- load masters safely ----
         masters = safe_load_master({
@@ -64,7 +64,7 @@ def main():
         raise
 
 if __name__ == "__main__":
-    main()
+    make_balance_main()
 
 """V.001 動作確認版
 # ファイルの読み込み / 参照データの登録

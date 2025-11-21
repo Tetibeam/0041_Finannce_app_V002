@@ -1,12 +1,12 @@
-from .utils.target_settings import(
+from ..lib.target_settings import(
     PATH_TARGET_PARAMETER, PATH_TARGET_ASSET_PROFIT,
     PATH_TARGET_BALANCE, PATH_TARGET_RATE, PATH_TARGET_INITIAL_VALUE
 )
-from .utils.file_io import load_parquet, save_parquet
-from .utils.target_balance_cal import build_balance_target
-from .utils.target_asset_cal import build_asset_profit_target
-from .utils.main_helper import safe_load_master, get_value_as_str
-from .utils import reference_data_store as urds
+from ..lib.file_io import load_parquet, save_parquet
+from ..lib.target_balance_cal import build_balance_target
+from ..lib.target_asset_cal import build_asset_profit_target
+from ..lib.main_helper import safe_load_master, get_value_as_str
+from ..lib import reference_data_store as urds
 import pandas as pd
 import numpy as np
 
@@ -16,7 +16,7 @@ PATHS = {
     "target_initial_value": PATH_TARGET_INITIAL_VALUE,
 }
 
-def main():
+def make_target_main():
     try:
         # ---- load masters safely ----
         masters = safe_load_master({
@@ -62,4 +62,4 @@ def main():
         raise
 
 if __name__ == "__main__":
-    main()
+    make_target_main()
