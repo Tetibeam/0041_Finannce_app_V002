@@ -1,6 +1,4 @@
 project_name: "stock_screening"
-data_path:
-  raw: "./data/raw"
 database_path: "./database"
 database:
   finance: "finance.db"

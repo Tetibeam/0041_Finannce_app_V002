@@ -1,6 +1,5 @@
 from flask import Flask
 from app.utils.config import load_settings
-from app.routes.routes_dashboard import dashboard_bp
 import os
 
 def create_app():
@@ -18,6 +17,10 @@ def create_app():
         app.config[key.upper()] = value
 
     # Blueprint登録
+    from app.routes.routes_dashboard import dashboard_bp
     app.register_blueprint(dashboard_bp)
+    
+    from app.routes.routes_data import data_bp
+    app.register_blueprint(data_bp)
 
     return app

@@ -8,8 +8,8 @@ DB_DIR  = os.path.join(BASE_DIR, "database")
 FINANCE_DB = os.path.join(DB_DIR, "finance.db")
 TARGET_PARAMETER_DB = os.path.join(DB_DIR, "target_parameter.db")
 
-RAW_DATA_DIR = "G:\マイドライブ\AssetManager\Total\output"
-RAW_PARAMETER_DIR = "G:\マイドライブ\AssetManager\Total\parameter"
+RAW_DATA_DIR = r"G:\マイドライブ\AssetManager\Total\output"
+RAW_PARAMETER_DIR = r"G:\マイドライブ\AssetManager\Total\parameter"
 
 
 def parquet_to_sqlite(parquet_file, table_name, conn):
