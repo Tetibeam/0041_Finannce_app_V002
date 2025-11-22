@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import sqlite3
 from werkzeug.exceptions import BadRequest, InternalServerError
+from app.utils.data_loader import update_from_csv
 
 data_bp = Blueprint("data", __name__, url_prefix="/api/data")
 
@@ -11,6 +12,10 @@ def upload_update():
     """
     CSVファイル(diff_asset_profit.csv, diff_balance.csv)を受け取り、
     finance.db の asset, balance テーブルに追記する。
+    # DBアクセスは with 文を使う
+    # 1. commit/rollback/close を自動化して安全
+    # 2. コードが短く、読みやすい
+    # 3. 例外発生時も DB が壊れない
     """
     try:
         # ファイルの取得
@@ -24,34 +29,18 @@ def upload_update():
             current_app.config["DATABASE_PATH"],
             current_app.config["DATABASE"]["finance"]
         )
+        # --- CSV → DB ---
+        asset_added = 0
+        balance_added = 0
 
-        updated_counts = {}
-
-        # DB接続
-        with sqlite3.connect(db_path) as conn:
-            # Asset Profit Update
-            if file_asset:
-                df_asset = pd.read_csv(file_asset)
-                if not df_asset.empty:
-                    # 必要なカラムがあるかチェックなどは省略（信頼できるソース前提）
-                    df_asset.to_sql("asset", conn, if_exists="append", index=False)
-                    updated_counts["asset"] = len(df_asset)
-                else:
-                    updated_counts["asset"] = 0
-
-            # Balance Update
-            if file_balance:
-                df_balance = pd.read_csv(file_balance)
-                if not df_balance.empty:
-                    df_balance.to_sql("balance", conn, if_exists="append", index=False)
-                    updated_counts["balance"] = len(df_balance)
-                else:
-                    updated_counts["balance"] = 0
+        if file_asset:
+            asset_added = update_from_csv(db_path, file_asset, "asset")
+        if file_balance:
+            balance_added = update_from_csv(db_path, file_balance, "balance")
 
         return jsonify({
             "status": "success",
-            "message": "Database updated successfully.",
-            "updated_counts": updated_counts
+            "updated_counts": {"asset": asset_added, "balance": balance_added}
         })
 
     except BadRequest as e:

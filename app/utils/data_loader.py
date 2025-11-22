@@ -2,6 +2,12 @@ import pandas as pd
 import sqlite3
 import os
 from typing import Union, List
+from pathlib import Path
+
+# DBアクセスは with 文を使うことにします
+# 1. commit/rollback/close を自動化して安全
+# 2. コードが短く、読みやすい
+# 3. 例外発生時も DB が壊れない
 
 def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, values_col,
                    aggfunc="sum", where_clause=None, set_index: bool=False):
@@ -22,6 +28,14 @@ def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, v
     Returns:
         pd.DataFrame: 処理されたDataFrame。
     """
+    query = f'SELECT * FROM "{table_name}"'
+    if where_clause:
+        query += f" WHERE {where_clause}"
+    # --- with を使って接続管理 ---
+    with sqlite3.connect(db_path) as conn:
+        df = pd.read_sql_query(query, conn)
+
+    """
     # --- データ読み込み ---
     conn = sqlite3.connect(db_path)
     query = f'SELECT * FROM "{table_name}"'
@@ -29,6 +43,7 @@ def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, v
         query += f" WHERE {where_clause}"
     df = pd.read_sql_query(query, conn)
     conn.close()
+    """
 
     # --- 日付列があれば変換 ---
     if isinstance(index_col, str):
@@ -49,3 +64,44 @@ def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, v
     grouped = df.groupby(group_keys, as_index=False)[values].agg(aggfunc)
 
     return grouped.set_index(index_col) if set_index else grouped
+
+def append_to_table(db_path: str, df: pd.DataFrame, table_name: str) -> int:
+    """
+    DataFrame の内容を指定テーブルに追記して、追加件数を返す。
+
+    Args:
+        db_path (str): SQLite データベースのパス
+        df (pd.DataFrame): 追記する DataFrame
+        table_name (str): 追記先テーブル名
+
+    Returns:
+        int: 追加した行数
+    """
+    if df.empty:
+        return 0
+
+    db_file = Path(db_path)
+    if not db_file.exists():
+        raise FileNotFoundError(f"DBファイルが存在しません: {db_path}")
+
+    # --- DB接続、withで管理 ---
+    with sqlite3.connect(db_path) as conn:
+        df.to_sql(table_name, conn, if_exists="append", index=False)
+        added_rows = len(df)
+
+    return added_rows
+    
+def update_from_csv(db_path: str, csv_path: str, table_name: str) -> int:
+    """
+    CSV ファイルを読み込んで指定テーブルに追記する。
+
+    Args:
+        db_path (str): SQLite データベースのパス
+        csv_path (str): CSV ファイルのパス
+        table_name (str): 追記先テーブル名
+
+    Returns:
+        int: 追加した行数
+    """
+    df = pd.read_csv(csv_path)
+    return append_to_table(db_path, df, table_name)
