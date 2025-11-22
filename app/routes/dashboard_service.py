@@ -6,44 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
 import json
-"""
-from utils.calculation import cal_general_special_balance_dashboard, cal_total_return_target_dashboard
-from utils.read_from_db import get_asset_and_profit_dashboard, get_balance_dashboard
-from typing import Dict, Any
-import utils.visualize_dashboard as viz
 
-graphs_cache = {}
-graphs_info = {
-    "assets": "🤑 総資産推移",
-    "general_income_expenditure": "🤑 一般収入・支出",
-    "special_income_expenditure": "🤑 特別収入・支出",
-    "returns": "🤑 トータルリターン",
-    "general_balance": "🤑 一般収支",
-    "special_balance": "🤑 特別収支"
-}
-
-def build_dashboard_graphs(db_path):
-    global graphs_cache
-
-    # データ取得
-    df_asset_profit = get_asset_and_profit_dashboard(db_path)
-    df_asset_profit = cal_total_return_target_dashboard(df_asset_profit)
-    df_balance = get_balance_dashboard(db_path)
-    df_general = cal_general_special_balance_dashboard(df_balance, "一般収支")
-    df_special = cal_general_special_balance_dashboard(df_balance, "特別収支")
-
-    # グラフ化
-    graphs_cache.clear()
-
-    graphs_cache["assets"] = viz.write_html(viz.display_total_assets(df_asset_profit), "assets")
-    graphs_cache["returns"] = viz.write_html(viz.display_total_returns(df_asset_profit), "returns")
-    graphs_cache["general_income_expenditure"] = viz.write_html(viz.display_general_income_expenditure(df_general), "general_income_expenditure")
-    graphs_cache["general_balance"] = viz.write_html(viz.display_general_balance(df_general), "general_balance")
-    graphs_cache["special_income_expenditure"] = viz.write_html(viz.display_special_income_expenditure(df_special), "special_income_expenditure")
-    graphs_cache["special_balance"] = viz.write_html(viz.display_special_balance(df_special), "special_balance")
-
-    return graphs_cache, graphs_info
-"""
 def read_table_from_db(db_path):
     df_asset_profit = get_df_from_db(
         db_path=db_path, table_name="asset", index_col="date", columns_col=None, 
@@ -282,7 +245,8 @@ def build_dashboard_payload(db_path: str, include_graphs: bool = True, include_s
 if __name__ == "__main__":
     import os
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DB_DIR  = os.path.join(BASE_DIR, "database")
+    print(BASE_DIR)
+    DB_DIR  = os.path.join(BASE_DIR, "..", "database")
     FINANCE_DB = os.path.join(DB_DIR, "finance.db")
     build_dashboard_payload(FINANCE_DB)
 
