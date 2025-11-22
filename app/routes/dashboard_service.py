@@ -1,9 +1,4 @@
-from pathlib import Path
-import sys
-# このファイルの親フォルダ(= modules の親)をパスに追加
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
-from utils.data_loader import get_df_from_db
+from app.utils.data_loader import get_df_from_db
 from typing import Dict, Any
 import numpy as np
 import pandas as pd

@@ -1,4 +1,4 @@
-from utils.data_loader import get_df_from_db
+from app.utils.data_loader import get_df_from_db
 import pandas as pd
 
 def get_asset_and_profit_dashboard(DB_PATH_FINANCE: str):
