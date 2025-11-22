@@ -12,10 +12,6 @@ def upload_update():
     """
     CSVファイル(diff_asset_profit.csv, diff_balance.csv)を受け取り、
     finance.db の asset, balance テーブルに追記する。
-    # DBアクセスは with 文を使う
-    # 1. commit/rollback/close を自動化して安全
-    # 2. コードが短く、読みやすい
-    # 3. 例外発生時も DB が壊れない
     """
     try:
         # ファイルの取得

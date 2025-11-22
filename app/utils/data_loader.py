@@ -9,8 +9,10 @@ from pathlib import Path
 # 2. コードが短く、読みやすい
 # 3. 例外発生時も DB が壊れない
 
-def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, values_col,
-                   aggfunc="sum", where_clause=None, set_index: bool=False):
+def get_df_from_db(
+    db_path: str, table_name: str, index_col: str, columns_col, values_col,
+    aggfunc="sum", where_clause=None, set_index: bool=False
+):
     """
     指定されたデータベースからデータを読み込み、DataFrameを返す。
 
@@ -19,7 +21,7 @@ def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, v
         table_name (str): データを取得するテーブル名。
         index_col (str): DataFrameのインデックス（またはgroupbyの第一引数）として使用する列名。
         columns_col (str or list, optional): groupbyの第二引数として使用する列名。
-                                             Noneの場合、index_colとvalues_colのみでgroupbyを行う。
+                                            Noneの場合、index_colとvalues_colのみでgroupbyを行う。
         values_col (str or list): 集計対象の列名。
         aggfunc (str, optional): 集計関数。デフォルトは"sum"。
         where_clause (str, optional): データをフィルタリングするためのWHERE句。デフォルトはNone。
@@ -34,16 +36,6 @@ def get_df_from_db(db_path: str, table_name: str, index_col: str, columns_col, v
     # --- with を使って接続管理 ---
     with sqlite3.connect(db_path) as conn:
         df = pd.read_sql_query(query, conn)
-
-    """
-    # --- データ読み込み ---
-    conn = sqlite3.connect(db_path)
-    query = f'SELECT * FROM "{table_name}"'
-    if where_clause:
-        query += f" WHERE {where_clause}"
-    df = pd.read_sql_query(query, conn)
-    conn.close()
-    """
 
     # --- 日付列があれば変換 ---
     if isinstance(index_col, str):
@@ -77,20 +69,25 @@ def append_to_table(db_path: str, df: pd.DataFrame, table_name: str) -> int:
     Returns:
         int: 追加した行数
     """
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError(f"df must be a pandas DataFrame, got {type(df)}")
     if df.empty:
         return 0
+    if not isinstance(table_name, str) or not table_name.isidentifier():
+        raise ValueError(f"Invalid table name: {table_name}")
 
     db_file = Path(db_path)
     if not db_file.exists():
         raise FileNotFoundError(f"DBファイルが存在しません: {db_path}")
 
     # --- DB接続、withで管理 ---
-    with sqlite3.connect(db_path) as conn:
-        df.to_sql(table_name, conn, if_exists="append", index=False)
-        added_rows = len(df)
+    try:
+        with sqlite3.connect(db_path) as conn:
+            df.to_sql(table_name, conn, if_exists="append", index=False)
+            return len(df)
+    except Exception as e:
+        raise InternalServerError(f"DB追加に失敗しました: {e}")
 
-    return added_rows
-    
 def update_from_csv(db_path: str, csv_path: str, table_name: str) -> int:
     """
     CSV ファイルを読み込んで指定テーブルに追記する。

@@ -71,7 +71,7 @@ def update_master():
         try:
             resp = requests.post(upload_url, files=files, timeout=30)
             resp.raise_for_status()
-            py
+            result = resp.json()
             logger.info(f"Upload successful: {result}")
         except Exception as e:
             logger.error(f"Failed to upload data: {e}")
