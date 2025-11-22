@@ -20,7 +20,7 @@ def parquet_to_sqlite(parquet_file, table_name, conn):
 def init_finance_db():
     with sqlite3.connect(FINANCE_DB) as conn:
         parquet_to_sqlite(os.path.join(RAW_DATA_DIR, "asset_detail_test2.parquet"), "asset", conn)
-        parquet_to_sqlite(os.path.join(RAW_DATA_DIR, "balance_detail.parquet"), "balance", conn)
+        parquet_to_sqlite(os.path.join(RAW_DATA_DIR, "asset_detail_test.parquet"), "balance", conn)
         parquet_to_sqlite(os.path.join(RAW_DATA_DIR, "target_asset_profit.parquet"), "target", conn)
 
     print(f"Finance DB initialized at {FINANCE_DB}")
