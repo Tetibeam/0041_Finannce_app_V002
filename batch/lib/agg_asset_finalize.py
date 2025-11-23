@@ -3,7 +3,7 @@ import numpy as np
 import numpy_financial as npf
 from monthdelta import monthmod
 import datetime
-from . import reference_data_store as urds
+from ..lib import reference_data_store as urds
 from .decorator import require_columns
 from .main_helper import safe_pipe
 from .file_io import save_csv

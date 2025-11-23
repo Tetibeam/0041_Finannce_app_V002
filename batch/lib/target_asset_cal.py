@@ -1,6 +1,6 @@
 from .target_balance_cal import cal_total_balance
 from .decorator import require_columns, require_columns_with_dtype, check_args_types
-from . import reference_data_store as urds
+from ..lib import reference_data_store as urds
 import pandas as pd
 import numpy as np
 

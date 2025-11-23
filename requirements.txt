@@ -9,3 +9,4 @@ requests==2.32.5
 PyYAML==6.0.3
 pyarrow==22.0.0
 pdfplumber==0.11.8
+Cython>=3.0.0

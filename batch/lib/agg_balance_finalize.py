@@ -1,4 +1,4 @@
-from . import reference_data_store as urds
+from ..lib import reference_data_store as urds
 import pandas as pd
 import itertools
 from .decorator import require_columns, check_args_types

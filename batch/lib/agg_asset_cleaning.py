@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from . import reference_data_store as urds
+from ..lib import reference_data_store as urds
 from .decorator import require_columns, require_columns_with_dtype
 from .main_helper import safe_pipe
 
